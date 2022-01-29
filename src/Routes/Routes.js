@@ -14,8 +14,8 @@ const Routes = () => {
     <Router>
       <Routing>
         <Route path='/' element={<Modulos />} />
-        <Route path='/Aulas' element={<Aulas />} />
-        <Route path='/Login' element={<Login />} />
+        <Route path='/aulas' element={<Aulas />} />
+        <Route path='/login' element={<Login />} />
       </Routing>
     </Router>
 

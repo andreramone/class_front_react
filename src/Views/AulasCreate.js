@@ -9,16 +9,15 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import api from "../Services/api";
-import ModalModulos from "../Components/ModalModulos";
-import ModalAulas from "../Components/ModalAulas";
 import { getToken } from "../Services/auth";
-import { id } from "date-fns/locale";
+import ReactPlayer from 'react-player/youtube';
+import ModalAulas from '../Components/ModalAulas'
 
-const Dashboard = () => {
+const AulasCreate = () => {
   const navigate = useNavigate();
-  const [modulos, setModulos] = useState([]);
+  const [aulasCreate, setAulasCreate] = useState([]);
   // const [data, setdata] = useState([]);
-  const [moduloSelecionado, setModuloSelecionado] = useState({});
+  const [aulaSelecionada, setAulaSelecionada] = useState({});
   const [show, setShow] = useState(false);
   const [inputs, setInputs] = useState({
     email: "",
@@ -39,41 +38,39 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    api.get("modulos").then((res) => {
+    api.get("aulas").then((res) => {
       const result = res.data;
-      setModulos(result);
+      setAulasCreate(result);
     });
   }, []);
 
-  const handleCreate = (nome, descricao) => {
-    api.post("/modulos", { nome, descricao }, config).then((res) => {
+  const handleCreate = (nome, id_modulo, data, url) => {
+    api.post("/aulas", { nome, id_modulo, data, url }, config).then((res) => {
       const result = res.data;
-      const modulosArr = modulos;
-      modulosArr.push(result);
-      setModulos(modulosArr);
+      const aulasCreateArr = aulasCreate;
+      aulasCreateArr.push(result);
+      setAulasCreate(aulasCreateArr);
       setShow(false);
     });
   };
 
-  const handleEdit = (id, nome, descricao) => {
-    api.put("/modulos", { id, nome, descricao }, config).then((res) => {
+  const handleEdit = (id, nome, id_modulo, data, url, aulas) => {
+    api.put("/aulas", { nome, url, id_modulo, data }, config).then((res) => {
       const result = res.data;
-      const modulo = modulos.find((m) => m.id === id);
-      modulo.nome = result.nome;
-      modulo.descricao = result.descricao;
-
+      const aulasCreate = aulas.find((m) => m.id === id);
       setShow(false);
     });
   };
 
   function handleDelete(id) {
-    if (window.confirm("Você quer realmente apagar?")) {
-      api.delete("/modulos/" + id, config).then((res) => {
+    debugger;
+    if (window.confirm("Você quer realmente apagar")) {
+      api.delete("/aulas/" + id, config).then((res) => {
         if (res.status === 200) {
-          const filteredModulos = modulos.filter((modulo) => {
-            return modulo.id !== id;
+          const filteredAulas = aulasCreate.filter((aula) => {
+            return aula.id !== id;
           });
-          setModulos(filteredModulos);
+          setAulasCreate(filteredAulas);
         }
       });
     }
@@ -81,12 +78,12 @@ const Dashboard = () => {
 
   return (
     <>
-      <ModalModulos
+      <ModalAulas
         show={show}
         handleClose={() => handleClose()}
         handleCreate={handleCreate}
         handleEdit={handleEdit}
-        moduloSelecionado={moduloSelecionado}
+        aulaSelecionada={aulaSelecionada}
       />
       <Container>
         <Row className="mt-3">
@@ -117,7 +114,7 @@ const Dashboard = () => {
                 handleShow();
               }}
             >
-              Criar Módulo
+              Criar Aulas
             </Button>
           </Col>
         </Row>
@@ -126,33 +123,29 @@ const Dashboard = () => {
           xs={3}
           className="d-flex align-items-left justify-content-md-center auth-bg px-2 p-lg-5 mx-auto"
         >
-          {modulos.length > 0
-            ? modulos.map((modulo, index) => (
+          {aulasCreate.length > 0
+            ? aulasCreate.map((aula, index) => (
                 <Col key={index} className="mb-3">
                   <Card border="primary" style={{ width: "18rem" }}>
                     <Card.Body>
-                      <Card.Title>{modulo.nome}</Card.Title>
-                      <Card.Text>{modulo.descricao}</Card.Text>
-                      <Card.Text> {modulo.aulas} Aula(s)</Card.Text>
-                      <Button
-                        variant="primary"
-                        onClick={() => navigate("/aulas/" + modulo.id)}
-                      >
-                        Aulas
-                      </Button>
-
+                      <Card.Title>{aula.nome}</Card.Title>
+                      <Card.Text>Módulo {aula.id_modulo}</Card.Text>
+                      <ReactPlayer 
+                        width='100%' 
+                        height='100%' 
+                        url={aula.url} />
                       <Button
                         variant="danger"
-                        onClick={() => handleDelete(modulo.id)}
+                        onClick={() => handleDelete(aula.id)}
                       >
-                        Apagar Módulo
+                        Apagar
                       </Button>
 
                       <Button
                         variant="secondary"
                         onClick={() => {
                           handleShow();
-                          setModuloSelecionado(modulo);
+                          setAulaSelecionada(aulasCreate);
                         }}
                       >
                         Editar
@@ -168,4 +161,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default AulasCreate;

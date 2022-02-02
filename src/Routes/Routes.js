@@ -6,6 +6,7 @@ import Cadastro from '../Views/Cadastro'
 import Dashboard from '../Views/Dashboard'
 
 import { isAuthenticated } from "../Services/auth";
+import AulasCreate from '../Views/AulasCreate';
 
 function PrivateRoute({ children }) {
   return isAuthenticated() ? children : <Navigate to="/" />;
@@ -16,7 +17,7 @@ const Routes = () => {
     <Router>
       <Routing>
         <Route path='/' element={<Modulos />} />
-        {/* <Route path='/aulas' element={<Aulas />} /> */}
+        <Route exact path='/aulas' element={<AulasCreate />} />
         <Route path='/aulas/:id' element={<Aulas />} />
         
         <Route path='/dashboard' element={<PrivateRoute><Dashboard /></PrivateRoute>} />

@@ -1,15 +1,17 @@
 import { Container, Row, FormControl, Card, Button, Col } from 'react-bootstrap';
 import React, { useState, useEffect } from "react";
 import ReactPlayer from 'react-player/youtube';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from "../Services/api";
+import { format} from 'date-fns'
 
 
 const Aulas = () => {
+  let {id} = useParams()
   const navigate = useNavigate();
   const [aulas, setAulas] = useState([]);
   useEffect(() => {
-    api.get("aulas").then((res) => {
+    api.get("aulas/modulo/" + id).then((res) => {
       const result = res.data;
       setAulas(result);
     });
@@ -40,7 +42,7 @@ const Aulas = () => {
                     <Card.Text>{aula.modulo}</Card.Text>
                   </Card.Body>
                   <Card.Body>
-                    <Card.Text className='fw-bold'>{aula.data}</Card.Text>
+                    <Card.Text className='fw-bold'>{format(new Date(aula.data), 'dd/MM/yyyy hh:mm')}</Card.Text>
                   </Card.Body>
                 </Card>
               </Col>

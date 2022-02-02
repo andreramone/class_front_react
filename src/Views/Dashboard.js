@@ -10,7 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import api from "../Services/api";
 
-const Modulos = () => {
+const Dashboard = () => {
   const navigate = useNavigate();
   const [modulos, setModulos] = useState([]);
 
@@ -71,4 +71,4 @@ const Modulos = () => {
   );
 };
 
-export default Modulos;
+export default Dashboard;

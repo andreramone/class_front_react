@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Route, Routes as Routing, Navigate } from 'rea
 import Login from '../Views/Login';
 import Modulos from '../Views/Modulos';
 import Aulas from '../Views/Aulas';
+import Cadastro from '../Views/Cadastro'
+import Dashboard from '../Views/Dashboard'
 
 import { isAuthenticated } from "../Services/auth";
 
@@ -14,8 +16,12 @@ const Routes = () => {
     <Router>
       <Routing>
         <Route path='/' element={<Modulos />} />
-        <Route path='/aulas' element={<Aulas />} />
+        {/* <Route path='/aulas' element={<Aulas />} /> */}
+        <Route path='/aulas/:id' element={<Aulas />} />
+        
+        <Route path='/dashboard' element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path='/login' element={<Login />} />
+        <Route path='/cadastro' element={<Cadastro />} />
       </Routing>
     </Router>
 

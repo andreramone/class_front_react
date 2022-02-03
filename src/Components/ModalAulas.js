@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
-import api from "../Services/api";
 
 const ModalAulas = (props) => {
-  const [data, setdata] = useState([]);
-  const [show, setShow] = useState(false);
   const [aulaSelecionada, setAulaSelecionada] = useState({});
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
 
   useEffect(() => {
     setAulaSelecionada({
@@ -17,22 +11,28 @@ const ModalAulas = (props) => {
       id_modulo: props.aulaSelecionada.id_modulo,
       url: props.aulaSelecionada.url,
     });
-  }, [props]);
+  }, []);
 
-  function openModalDelete(id) {
-    if (window.confirm("Deseja realmente apagar?")) {
-      api.delete("/aulas/" + id).then((res) => {
-        debugger;
-        if (res.status === 200) {
-          const filtereddata = data.filter((aulas) => {
-            return aulas.id !== id;
-          });
-          setdata(filtereddata);
-          setShow(false);
-        }
-      });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!props.aulaSelecionada.id) {
+      props.handleCreate(
+        aulaSelecionada.nome,
+        aulaSelecionada.id_modulo,
+        aulaSelecionada.data,
+        aulaSelecionada.url
+      );
+    } else {
+      props.handleEdit(
+        props.aulaSelecionada.id,
+        aulaSelecionada.nome,
+        aulaSelecionada.id_modulo,
+        aulaSelecionada.data,
+        aulaSelecionada.url
+      );
     }
-  }
+    props.handleClose()
+  };
 
   return (
     <Modal
@@ -46,7 +46,7 @@ const ModalAulas = (props) => {
         <Modal.Title>Crie sua nova Aula</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <form>
+        <form onSubmit={handleSubmit}>
           <fieldset>
             <div className="row mb-3">
               <div className="col-md-2 ">
@@ -79,7 +79,7 @@ const ModalAulas = (props) => {
               </div>
               <div className="col-md-10">
                 <Form.Select
-                  required
+                  required={true}
                   value={aulaSelecionada.id_modulo}
                   onChange={(e) =>
                     setAulaSelecionada((aula) => ({
@@ -89,6 +89,7 @@ const ModalAulas = (props) => {
                   }
                   aria-label="Default select example"
                 >
+                  <option value={''}>Selecione um módulo</option>
                   {props.arrModulos.map((modulo, index) => {
                     return (
                       <option key={index} value={modulo.id}>
@@ -108,7 +109,7 @@ const ModalAulas = (props) => {
               <div className="col-md-10">
                 <input
                   className="form-control"
-                  type="text"
+                  type="datetime-local"
                   value={aulaSelecionada.data}
                   name="data"
                   onChange={(e) =>
@@ -145,44 +146,16 @@ const ModalAulas = (props) => {
               </div>
             </div>
           </fieldset>
+          <Button variant="secondary" onClick={props.handleClose}>
+            Fechar
+          </Button>
+          <Button variant="primary" type="submit">
+            {Object.keys(props.aulaSelecionada).length !== 0
+              ? "Salvar"
+              : "Criar"}
+          </Button>
         </form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={props.handleClose}>
-          Fechar
-        </Button>
-
-        {Object.keys(props.aulaSelecionada).length !== 0 ? (
-          <Button
-            variant="primary"
-            onClick={() =>
-              props.handleEdit(
-                props.aulaSelecionada.id,
-                aulaSelecionada.nome,
-                aulaSelecionada.id_modulo,
-                aulaSelecionada.data,
-                aulaSelecionada.url
-              )
-            }
-          >
-            Salvar
-          </Button>
-        ) : (
-          <Button
-            variant="primary"
-            onClick={() =>
-              props.handleCreate(
-                aulaSelecionada.nome,
-                aulaSelecionada.id_modulo,
-                aulaSelecionada.data,
-                aulaSelecionada.url
-              )
-            }
-          >
-            Criar
-          </Button>
-        )}
-      </Modal.Footer>
     </Modal>
   );
 };

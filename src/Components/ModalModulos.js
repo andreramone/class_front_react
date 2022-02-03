@@ -1,35 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal } from "react-bootstrap";
-import api from "../Services/api";
+
 
 const ModalModulos = (props) => {
-  const [modulos, setModulos] = useState([]);
-  const [data, setdata] = useState([]);
-  const [show, setShow] = useState(false);
   const [nome, setNome] = useState([]);
   const [descricao, setDescricao] = useState([]);
-
-  const handleClose = () => setShow(false);
-
-  const handleShow = () => setShow(true);
 
   useEffect(() => {
     setNome(props.moduloSelecionado.nome);
     setDescricao(props.moduloSelecionado.descricao);
   }, [props]);
-
-  function openModalDelete(id) {
-    if (window.confirm("Você quer realmente apagar?")) {
-      api.delete("/modulos/" + id).then((res) => {
-        if (res.status === 200) {
-          const filtereddata = data.filter((modulo) => {
-            return modulo.id !== id;
-          });
-          setdata(filtereddata);
-        }
-      });
-    }
-  }
 
   return (
     <Modal

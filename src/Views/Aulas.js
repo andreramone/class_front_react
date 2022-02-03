@@ -4,6 +4,7 @@ import ReactPlayer from 'react-player/youtube';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from "../Services/api";
 import { format} from 'date-fns'
+import {logout, isAuthenticated} from '../Services/auth'
 
 
 const Aulas = () => {
@@ -23,7 +24,19 @@ const Aulas = () => {
           <FormControl type='text' id='search' placeholder='O que você está procurando?'></FormControl>
          </Col>
           <Col xs={{ span: 2 }}>
-         <Button variant="secondary" size="md" onClick={()=> navigate('/login')}>Login</Button>
+          {isAuthenticated ? (
+              <Button variant="secondary" size="md" onClick={() => {logout();  navigate("/")}  }>
+                Logout
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </Button>
+            )}
         </Col>
       </Row>
       {aulas.length > 0

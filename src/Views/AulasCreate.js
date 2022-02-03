@@ -9,38 +9,31 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import api from "../Services/api";
-import { getToken } from "../Services/auth";
+import { getToken, isAuthenticated, logout } from "../Services/auth";
 import ReactPlayer from 'react-player/youtube';
 import ModalAulas from '../Components/ModalAulas'
 
 const AulasCreate = () => {
+  const config = { headers: { Authorization: `Bearer ${getToken()}` } };
   const navigate = useNavigate();
+
   const [aulasCreate, setAulasCreate] = useState([]);
-  // const [data, setdata] = useState([]);
   const [aulaSelecionada, setAulaSelecionada] = useState({});
   const [show, setShow] = useState(false);
-  const [inputs, setInputs] = useState({
-    email: "",
-    senha: "",
-  });
+  const [arrModulos, setArrModulos] = useState([]);
 
-  const config = { headers: { Authorization: `Bearer ${getToken()}` } };
-
-  const handleClose = () => setShow(false);
-
+  const handleClose = () => {setShow(false); setAulaSelecionada({})};
   const handleShow = () => setShow(true);
-
-  const handleChange = (e) => {
-    setInputs({
-      ...inputs,
-      [e.target.name]: e.target.value,
-    });
-  };
 
   useEffect(() => {
     api.get("aulas").then((res) => {
       const result = res.data;
       setAulasCreate(result);
+    });
+
+    api.get("modulos").then((res) => {
+      const result = res.data;
+      setArrModulos(result);
     });
   }, []);
 
@@ -54,16 +47,19 @@ const AulasCreate = () => {
     });
   };
 
-  const handleEdit = (id, nome, id_modulo, data, url, aulas) => {
-    api.put("/aulas", { nome, url, id_modulo, data }, config).then((res) => {
+  const handleEdit = (id, nome, id_modulo, data, url, aula) => {
+    api.put("/aulas", { id, nome, url, id_modulo, data }, config).then((res) => {
       const result = res.data;
-      const aulasCreate = aulas.find((m) => m.id === id);
+      let aulaIndex = aulasCreate.findIndex((m) => m.id === id);
+      let arrAulas = [...aulasCreate]
+      arrAulas[aulaIndex] = result
+      setAulasCreate(arrAulas)
       setShow(false);
+      setAulaSelecionada({})
     });
   };
 
   function handleDelete(id) {
-    debugger;
     if (window.confirm("Você quer realmente apagar")) {
       api.delete("/aulas/" + id, config).then((res) => {
         if (res.status === 200) {
@@ -84,6 +80,7 @@ const AulasCreate = () => {
         handleCreate={handleCreate}
         handleEdit={handleEdit}
         aulaSelecionada={aulaSelecionada}
+        arrModulos={arrModulos}
       />
       <Container>
         <Row className="mt-3">
@@ -96,13 +93,19 @@ const AulasCreate = () => {
           </Col>
 
           <Col xs={{ span: 2 }}>
-            <Button
-              variant="secondary"
-              size="md"
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </Button>
+          {isAuthenticated ? (
+              <Button variant="secondary" size="md" onClick={() => {logout();  navigate("/")}  }>
+                Logout
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </Button>
+            )}
           </Col>
         </Row>
 
@@ -114,7 +117,7 @@ const AulasCreate = () => {
                 handleShow();
               }}
             >
-              Criar Aulas
+              Criar Aula
             </Button>
           </Col>
         </Row>
@@ -129,7 +132,7 @@ const AulasCreate = () => {
                   <Card border="primary" style={{ width: "18rem" }}>
                     <Card.Body>
                       <Card.Title>{aula.nome}</Card.Title>
-                      <Card.Text>Módulo {aula.id_modulo}</Card.Text>
+                      <Card.Text>{arrModulos.find(modulo => modulo.id === aula.id_modulo)?.nome}</Card.Text>
                       <ReactPlayer 
                         width='100%' 
                         height='100%' 
@@ -145,7 +148,7 @@ const AulasCreate = () => {
                         variant="secondary"
                         onClick={() => {
                           handleShow();
-                          setAulaSelecionada(aulasCreate);
+                          setAulaSelecionada(aula);
                         }}
                       >
                         Editar

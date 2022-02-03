@@ -9,6 +9,7 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import api from "../Services/api";
+import {logout, isAuthenticated} from '../Services/auth'
 
 const Modulos = () => {
   const navigate = useNavigate();
@@ -33,13 +34,19 @@ const Modulos = () => {
           ></FormControl>
         </Col>
         <Col xs={{ span: 2 }}>
-          <Button
-            variant="secondary"
-            size="md"
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </Button>
+        {isAuthenticated ? (
+              <Button variant="secondary" size="md" onClick={() => {logout();  navigate("/")}  }>
+                Logout
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </Button>
+            )}
         </Col>
       </Row>
 

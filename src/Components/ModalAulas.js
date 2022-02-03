@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Form } from "react-bootstrap";
 import api from "../Services/api";
 
 const ModalAulas = (props) => {
-  const [aulas, setAulas] = useState([]);
   const [data, setdata] = useState([]);
-  const [dataRealizacao, setDatarealizacao] = useState([]);
-
   const [show, setShow] = useState(false);
-  const [nome, setNome] = useState([]);
   const [aulaSelecionada, setAulaSelecionada] = useState({});
 
-
   const handleClose = () => setShow(false);
-
   const handleShow = () => setShow(true);
 
   useEffect(() => {
-    setNome(props.aulaSelecionada.nome);
-    
+    setAulaSelecionada({
+      nome: props.aulaSelecionada.nome,
+      data: props.aulaSelecionada.data,
+      id_modulo: props.aulaSelecionada.id_modulo,
+      url: props.aulaSelecionada.url,
+    });
   }, [props]);
 
   function openModalDelete(id) {
-    if (window.confirm("Você quer realmente apagar????")) {
+    if (window.confirm("Deseja realmente apagar?")) {
       api.delete("/aulas/" + id).then((res) => {
         debugger;
         if (res.status === 200) {
@@ -30,7 +28,7 @@ const ModalAulas = (props) => {
             return aulas.id !== id;
           });
           setdata(filtereddata);
-          setShow(false)
+          setShow(false);
         }
       });
     }
@@ -60,15 +58,47 @@ const ModalAulas = (props) => {
                 <input
                   className="form-control"
                   type="text"
-                  value={nome}
+                  value={aulaSelecionada.nome}
                   name="nome"
-                  onChange={(e) => setNome(e.target.value)}
+                  onChange={(e) =>
+                    setAulaSelecionada((aula) => ({
+                      ...aula,
+                      nome: e.target.value,
+                    }))
+                  }
                   required
                 />
               </div>
             </div>
 
-
+            <div className="row mb-3">
+              <div className="col-md-2 ">
+                <label className="form-label" htmlFor="modulo">
+                  Módulo:
+                </label>
+              </div>
+              <div className="col-md-10">
+                <Form.Select
+                  required
+                  value={aulaSelecionada.id_modulo}
+                  onChange={(e) =>
+                    setAulaSelecionada((aula) => ({
+                      ...aula,
+                      id_modulo: e.target.value,
+                    }))
+                  }
+                  aria-label="Default select example"
+                >
+                  {props.arrModulos.map((modulo, index) => {
+                    return (
+                      <option key={index} value={modulo.id}>
+                        {modulo.nome}
+                      </option>
+                    );
+                  })}
+                </Form.Select>
+              </div>
+            </div>
             <div className="row mb-3">
               <div className="col-md-2 ">
                 <label className="form-label" htmlFor="nome">
@@ -78,29 +108,38 @@ const ModalAulas = (props) => {
               <div className="col-md-10">
                 <input
                   className="form-control"
-                  type="date"
-                  value={data}
+                  type="text"
+                  value={aulaSelecionada.data}
                   name="data"
-                  onChange={(e) => setDatarealizacao(e.target.value)}
+                  onChange={(e) =>
+                    setAulaSelecionada((aula) => ({
+                      ...aula,
+                      data: e.target.value,
+                    }))
+                  }
                   required
                 />
               </div>
             </div>
 
-
             <div className="row mb-3">
               <div className="col-md-2 ">
-                <label className="form-label" htmlFor="descricao">
-                  Url da aula:
+                <label className="form-label" htmlFor="aulasUrl">
+                  Link da Aula:
                 </label>
               </div>
               <div className="col-md-10">
                 <input
                   className="form-control"
                   type="text"
-                  value={aulas.url}
-                  name="descricao"
-                  onChange={(e) => setAulas(e.target.value)}
+                  value={aulaSelecionada.url}
+                  name="aulasUrl"
+                  onChange={(e) =>
+                    setAulaSelecionada((aula) => ({
+                      ...aula,
+                      url: e.target.value,
+                    }))
+                  }
                   required
                 />
               </div>
@@ -113,17 +152,32 @@ const ModalAulas = (props) => {
           Fechar
         </Button>
 
-        {props.aulaSelecionada ? (
+        {Object.keys(props.aulaSelecionada).length !== 0 ? (
           <Button
             variant="primary"
-            onClick={() => props.handleEdit(props.aulaSelecionada.id, nome)}
+            onClick={() =>
+              props.handleEdit(
+                props.aulaSelecionada.id,
+                aulaSelecionada.nome,
+                aulaSelecionada.id_modulo,
+                aulaSelecionada.data,
+                aulaSelecionada.url
+              )
+            }
           >
             Salvar
           </Button>
         ) : (
           <Button
             variant="primary"
-            onClick={() => props.handleCreate(nome)}
+            onClick={() =>
+              props.handleCreate(
+                aulaSelecionada.nome,
+                aulaSelecionada.id_modulo,
+                aulaSelecionada.data,
+                aulaSelecionada.url
+              )
+            }
           >
             Criar
           </Button>

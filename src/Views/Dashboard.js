@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../Services/api";
 import ModalModulos from "../Components/ModalModulos";
 import ModalAulas from "../Components/ModalAulas";
-import { getToken } from "../Services/auth";
+import { getToken, isAuthenticated, logout } from "../Services/auth";
 import { id } from "date-fns/locale";
 
 const Dashboard = () => {
@@ -99,13 +99,19 @@ const Dashboard = () => {
           </Col>
 
           <Col xs={{ span: 2 }}>
-            <Button
-              variant="secondary"
-              size="md"
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </Button>
+            {isAuthenticated ? (
+              <Button variant="secondary" size="md" onClick={() => {logout();  navigate("/")}  }>
+                Logout
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </Button>
+            )}
           </Col>
         </Row>
 

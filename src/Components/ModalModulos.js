@@ -88,7 +88,7 @@ const ModalModulos = (props) => {
           Fechar
         </Button>
 
-        {props.moduloSelecionado ? (
+        {Object.keys(props.moduloSelecionado).length !== 0 ? (
           <Button
             variant="primary"
             onClick={() => props.handleEdit(props.moduloSelecionado.id, nome, descricao)}

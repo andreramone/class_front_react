@@ -11,7 +11,7 @@ const ModalAulas = (props) => {
       id_modulo: props.aulaSelecionada.id_modulo,
       url: props.aulaSelecionada.url,
     });
-  }, []);
+  }, [props]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

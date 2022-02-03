@@ -10,7 +10,7 @@ const NavbarApp = () => {
 
   useEffect(() => {
       setToken(getToken());
-  }, [token]);
+  }, [token, context]);
 
   const setLogout = () => {
     setCurrentUser();
@@ -34,6 +34,7 @@ const NavbarApp = () => {
           <Nav>
             {token ? (
               <Button
+                href="/login"
                 variant="outline-light"
                 size="md"
                 onClick={() => {
